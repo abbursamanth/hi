@@ -1,94 +1,122 @@
 import streamlit as st
-import pandas as pd
-import random
 
-# Set page config
-st.set_page_config(page_title="DBDA Course Recommendation")
+# Define courses
+courses = {
+    "Web Development": [
+        "Full-Stack Web Development with React", 
+        "JavaScript for Beginners", 
+        "Python Django Web App Development"
+    ],
+    "Business": [
+        "Business Analytics Masterclass", 
+        "Entrepreneurship Bootcamp", 
+        "Marketing Strategies for Growth"
+    ],
+    "Graphic Design": [
+        "Adobe Photoshop Mastery", 
+        "Illustrator for Beginners", 
+        "UI/UX Design Fundamentals"
+    ],
+    "Music": [
+        "Guitar Masterclass", 
+        "Piano for Beginners", 
+        "Music Theory Essentials"
+    ]
+}
 
-# Load dataset
-@st.cache_data
-def load_data():
-    return pd.read_csv("C://Users//Samanth Abbur//Desktop//deploy//udemy_courses.csv")
+# Define questions
+questions = {
+    "Web Development": [
+        {"question": "What does HTML stand for?", "options": ["Hyper Text Markup Language", "High Tech Modern Language", "Hyper Transfer Markup Language", "Hyper Tool Multi Language"], "answer": "Hyper Text Markup Language"},
+        {"question": "Which language is used for styling web pages?", "options": ["CSS", "Python", "Java", "C++"], "answer": "CSS"},
+        {"question": "Which of these is a JavaScript framework?", "options": ["React", "Django", "Flask", "Laravel"], "answer": "React"},
+    ],
+    "Business": [
+        {"question": "What is the primary goal of a business?", "options": ["Maximize profits", "Increase expenses", "Reduce employee wages", "Avoid taxes"], "answer": "Maximize profits"},
+        {"question": "What is the full form of KPI?", "options": ["Key Performance Indicator", "Key Product Insights", "Knowledge and Performance Index", "Key Process Improvement"], "answer": "Key Performance Indicator"},
+        {"question": "Which is a common business strategy?", "options": ["Market Penetration", "Graphical Enhancement", "Audio Mixing", "Frontend Optimization"], "answer": "Market Penetration"},
+    ],
+    "Graphic Design": [
+        {"question": "Which software is commonly used for graphic design?", "options": ["Photoshop", "Excel", "PowerPoint", "AutoCAD"], "answer": "Photoshop"},
+        {"question": "What does DPI stand for in design?", "options": ["Dots Per Inch", "Design Process Index", "Digital Print Integration", "Depth of Pixel Interface"], "answer": "Dots Per Inch"},
+        {"question": "Which color mode is used for printing?", "options": ["CMYK", "RGB", "Hex", "Grayscale"], "answer": "CMYK"},
+    ],
+    "Music": [
+        {"question": "What are the seven basic musical notes?", "options": ["Do Re Mi Fa Sol La Ti", "A B C D E F G", "One Two Three Four Five Six Seven", "High Low Medium"], "answer": "Do Re Mi Fa Sol La Ti"},
+        {"question": "Which of these is a string instrument?", "options": ["Guitar", "Trumpet", "Drums", "Flute"], "answer": "Guitar"},
+        {"question": "What is a music scale?", "options": ["Series of musical notes in order", "A tool for measuring loudness", "A type of instrument", "A musical performance"], "answer": "Series of musical notes in order"},
+    ],
+}
 
-data = load_data()
+# Session state variables
+if "page" not in st.session_state:
+    st.session_state.page = "login"
+if "name" not in st.session_state:
+    st.session_state.name = ""
+if "interests" not in st.session_state:
+    st.session_state.interests = []
+if "responses" not in st.session_state:
+    st.session_state.responses = {}
 
-def login_page():
-    st.title("🔑 Login & Profile Setup")
-    name = st.text_input("Enter your name:")
-    interests = st.multiselect("Select your interests:", ["Web Development", "Business Finance", "Graphic Design", "Music"])
-    if st.button("Save & Continue"):
-        if name and interests:
-            st.session_state["name"] = name
-            st.session_state["interests"] = interests
-            st.session_state["page"] = "dbda_test"
+# Login Page
+if st.session_state.page == "login":
+    st.title("🎓 Welcome to DBDA Course Recommendation")
+    st.subheader("🔑 Login")
+
+    st.session_state.name = st.text_input("Enter your name:")
+    st.session_state.interests = st.multiselect("Select your interests:", ["Web Development", "Business", "Graphic Design", "Music"])
+
+    if st.button("Start Test"):
+        if st.session_state.name and st.session_state.interests:
+            st.session_state.page = "test"
+            st.rerun()
         else:
             st.warning("Please enter your name and select at least one interest.")
 
-def dbda_test():
-    st.title("🎯 DBDA Test")
-    st.write("Answer 25 questions to determine your strongest domain!")
+# DBDA Test Page
+elif st.session_state.page == "test":
+    st.title(f"📝 DBDA Test for {st.session_state.name}")
     
-    # Define questions
-    questions = {
-        "Web Development": [
-            {"question": "What does HTML stand for?", "options": ["Hyper Text Markup Language", "High Tech Modern Language", "Hyper Transfer Markup Language", "Hyper Tool Multi Language"], "answer": "Hyper Text Markup Language"},
-            {"question": "Which language is used for styling web pages?", "options": ["CSS", "Python", "Java", "C++"], "answer": "CSS"},
-            {"question": "Which of these is a JavaScript framework?", "options": ["React", "Django", "Flask", "Laravel"], "answer": "React"},
-        ],
-        "Business": [
-            {"question": "What is the primary goal of a business?", "options": ["Maximize profits", "Increase expenses", "Reduce employee wages", "Avoid taxes"], "answer": "Maximize profits"},
-            {"question": "What is the full form of KPI?", "options": ["Key Performance Indicator", "Key Product Insights", "Knowledge and Performance Index", "Key Process Improvement"], "answer": "Key Performance Indicator"},
-            {"question": "Which is a common business strategy?", "options": ["Market Penetration", "Graphical Enhancement", "Audio Mixing", "Frontend Optimization"], "answer": "Market Penetration"},
-        ],
-        "Graphic Design": [
-            {"question": "Which software is commonly used for graphic design?", "options": ["Photoshop", "Excel", "PowerPoint", "AutoCAD"], "answer": "Photoshop"},
-            {"question": "What does DPI stand for in design?", "options": ["Dots Per Inch", "Design Process Index", "Digital Print Integration", "Depth of Pixel Interface"], "answer": "Dots Per Inch"},
-            {"question": "Which color mode is used for printing?", "options": ["CMYK", "RGB", "Hex", "Grayscale"], "answer": "CMYK"},
-        ],
-        "Music": [
-            {"question": "What are the seven basic musical notes?", "options": ["Do Re Mi Fa Sol La Ti", "A B C D E F G", "One Two Three Four Five Six Seven", "High Low Medium"], "answer": "Do Re Mi Fa Sol La Ti"},
-            {"question": "Which of these is a string instrument?", "options": ["Guitar", "Trumpet", "Drums", "Flute"], "answer": "Guitar"},
-            {"question": "What is a music scale?", "options": ["Series of musical notes in order", "A tool for measuring loudness", "A type of instrument", "A musical performance"], "answer": "Series of musical notes in order"},
-        ],
-    }
-    
-    responses = {}
-    st.subheader("📝 Answer the following questions:")
-    for idx, (domain, qlist) in enumerate(questions.items()):
-        for q in qlist:
-            responses[q["question"]] = st.radio(f"**{q['question']}**", q["options"])
-    
-    if st.button("Submit Answers"):
-        domain_scores = {domain: 0 for domain in questions.keys()}
-        
-        for domain, qlist in questions.items():
-            for q in qlist:
-                if responses[q["question"]] == q["answer"]:
-                    domain_scores[domain] += 1
-        
-        st.session_state["domain_scores"] = domain_scores
-        st.session_state["page"] = "recommendation"
+    st.write("Answer the following questions:")
+    question_idx = 0
+    for domain, question_list in questions.items():
+        for q in question_list:
+            st.session_state.responses[question_idx] = st.radio(f"**{question_idx + 1}. {q['question']}**", q["options"], key=question_idx)
+            question_idx += 1
 
-def recommendation():
-    st.title("📊 Course Recommendation")
-    domain_scores = st.session_state.get("domain_scores", {})
+    if st.button("Submit Answers"):
+        st.session_state.page = "result"
+        st.rerun()
+
+# Result Page
+elif st.session_state.page == "result":
+    st.title("🎯 Test Results")
+
+    # Scoring system
+    domain_scores = {domain: 0 for domain in questions}
+    
+    question_idx = 0
+    for domain, question_list in questions.items():
+        for q in question_list:
+            if st.session_state.responses.get(question_idx) == q["answer"]:
+                domain_scores[domain] += 1
+            question_idx += 1
+
+    # Determine strengths
     strongest_domain = max(domain_scores, key=domain_scores.get)
     
-    st.subheader("🔹 Your strongest domain:")
-    st.write(f"**{strongest_domain}**")
-    st.write("Domain scores:", domain_scores)
-    
-    # Recommend courses from dataset
-    st.subheader("🎓 Recommended Courses")
-    recommended_courses = data[data["subject"] == strongest_domain].head(5)
-    st.write(recommended_courses[["course_title", "price", "num_subscribers"]])
+    # Show results
+    st.write(f"**Your strongest domain is: {strongest_domain}**")
+    st.write("### Detailed Scores:")
+    for domain, score in domain_scores.items():
+        st.write(f"- **{domain}:** {score} correct answers")
 
-if "page" not in st.session_state:
-    st.session_state["page"] = "login"
+    # Course Recommendations
+    st.subheader("📚 Recommended Courses")
+    for domain in st.session_state.interests:
+        if domain in domain_scores:
+            st.write(f"**{domain} Courses:**")
+            for course in courses[domain]:
+                st.write(f"- {course}")
 
-if st.session_state["page"] == "login":
-    login_page()
-elif st.session_state["page"] == "dbda_test":
-    dbda_test()
-elif st.session_state["page"] == "recommendation":
-    recommendation()
+    st.button("Restart", on_click=lambda: st.session_state.update(page="login", responses={}, name="", interests=[]))
