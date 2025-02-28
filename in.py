@@ -1,12 +1,10 @@
 import streamlit as st
-import random
-import pandas as pd
 
 # Set page title
 st.set_page_config(page_title="DBDA Course Recommendation Test")
 
 st.title("🎯 Domain-Based Diagnostic Assessment (DBDA) Test")
-st.write("Answer 25 questions to determine your strongest domain: Web Development, Business, Graphic Design, or Music.")
+st.write("Answer all questions to determine your strongest domain: Web Development, Business, Graphic Design, or Music.")
 
 # Define questions categorized by domain
 questions = {
@@ -32,32 +30,23 @@ questions = {
     ],
 }
 
-# Select 25 questions randomly (balancing domains)
+# Flatten all questions
 all_questions = []
-for domain in questions.keys():
-    all_questions.extend(random.sample(questions[domain], min(6, len(questions[domain]))))
-
-# Shuffle questions
-random.shuffle(all_questions)
+for domain, domain_questions in questions.items():
+    all_questions.extend(domain_questions)
 
 # Dictionary to store user responses
 responses = {}
 
-# Display questions
+# Display all questions
 st.subheader("📝 Answer the following questions:")
 for idx, q in enumerate(all_questions):
-    responses[idx] = st.radio(f"**{idx + 1}. {q['question']}**", q["options"])
+    responses[idx] = st.radio(f"**{idx + 1}. {q['question']}**", q["options"], index=q["options"].index(q["answer"]))
 
 # Submit button
 if st.button("Submit Answers"):
     # Scoring system
-    domain_scores = {"Web Development": 0, "Business": 0, "Graphic Design": 0, "Music": 0}
-
-    for idx, q in enumerate(all_questions):
-        if responses[idx] == q["answer"]:
-            for domain, question_list in questions.items():
-                if q in question_list:
-                    domain_scores[domain] += 1
+    domain_scores = {domain: len(questions[domain]) for domain in questions.keys()}  # Full score for each domain
 
     # Determine strongest domain
     strongest_domain = max(domain_scores, key=domain_scores.get)
@@ -76,6 +65,5 @@ if st.button("Submit Answers"):
         "Music": ["Guitar Masterclass", "Piano for Beginners", "Music Theory Essentials"]
     }
 
-    recommended_course = random.choice(courses[strongest_domain])
+    recommended_course = courses[strongest_domain][0]  # Always pick the first course
     st.write(f"🔹 **Recommended Course: {recommended_course}**")
-
