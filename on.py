@@ -15,7 +15,7 @@ data = load_data()
 def login_page():
     st.title("🔑 Login & Profile Setup")
     name = st.text_input("Enter your name:")
-    interests = st.multiselect("Select your interests:", ["Web Development", "Business", "Graphic Design", "Music"])
+    interests = st.multiselect("Select your interests:", ["Web Development", "Business Finance", "Graphic Design", "Music"])
     if st.button("Save & Continue"):
         if name and interests:
             st.session_state["name"] = name
