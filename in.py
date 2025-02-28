@@ -81,5 +81,20 @@ if st.button("Submit Answers"):
     }
 
     # Recommend based on the strongest domain
-    recommended_course = courses[strongest_domain][0]  # Pick the most relevant course
-    st.write(f"🔹 **Recommended Course: {recommended_course}**")
+   # Determine percentage score
+total_questions = len(questions[strongest_domain])
+score_percentage = (domain_scores[strongest_domain] / total_questions) * 100
+
+# Select course based on score range
+if score_percentage >= 80:
+    recommended_course = courses[strongest_domain][0]  # Advanced course
+elif score_percentage >= 50:
+    recommended_course = courses[strongest_domain][1]  # Intermediate course
+else:
+    recommended_course = courses[strongest_domain][2]  # Beginner course
+
+# Display results
+st.write(f"🎯 Your score for {strongest_domain}: **{score_percentage:.2f}%**")
+st.write(f"🔹 **Recommended Course: {recommended_course}**")
+ # Pick the most relevant course
+st.write(f"🔹 **Recommended Course: {recommended_course}**")
